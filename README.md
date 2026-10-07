@@ -19,14 +19,14 @@ npm run lint`
 npm run build  # strict TypeScript + production assets in dist/
 npm run preview
 ```
-
+`
 ## What you can do
 
 - Create, rename, duplicate, delete, and switch between local projects.
 - Set a preset or custom booth footprint and height in centimeters.
 - Customize floor colors and Matte, Wood, Concrete or Carpet finishes, with an independent contrasting grid.
 - Choose curated furniture materials and compact table, chair, counter and stand style variants. These settings save, export and support Undo/Redo.
-- Add 15 primitive object types, including backdrops, counters, tables, chairs, TV screens, plants, and a human reference.
+- Add 18 reusable object types, including Bangchak Sign, Oil Display Stand and a detailed Roll-up Banner, alongside the original library of backdrops, counters, tables, chairs, TV screens, plants, and a human reference.
 - Select and drag objects along the floor, use exact dimensions, rotate, snap, align to walls, lock, and hide objects.
 - See rotated footprint and maximum height warnings without blocking intentional overflow.
 - Switch between perspective and orthographic top, front, left, and right views.
@@ -65,8 +65,13 @@ node scripts/browser-check.mjs
 node scripts/workflow-check.mjs
 node scripts/drag-check.mjs
 node scripts/visual-quality-check.mjs
+node scripts/exhibition-check.mjs
+node scripts/exhibition-preview.mjs
+node scripts/exhibition-drag.mjs
 ```
 
 The scripts use isolated browser contexts, verify the editor workflows, and save screenshots and downloaded examples in the OS temporary directory. They do not modify your normal browser projects.
 
 The visual refinement architecture and validation notes are in `docs/visual-quality/implementation.md`.
+
+Reference-based exhibition object specifications, asset sources and validation notes are in [docs/exhibition/implementation.md](docs/exhibition/implementation.md).

@@ -15,7 +15,15 @@ import {
   X,
 } from 'lucide-react';
 import { useEditor } from '../store/editor';
-import { cm, meters, overflow, registry, SCALE_THRESHOLDS, changeVariant } from '../domain/model';
+import {
+  cm,
+  meters,
+  overflow,
+  registry,
+  SCALE_THRESHOLDS,
+  changeVariant,
+  defaultOilLabels,
+} from '../domain/model';
 import type { Dimensions, Material } from '../domain/model';
 import { readArtwork } from '../persistence/projects';
 import { ObjectThumbnail } from './ObjectThumbnail';
@@ -166,6 +174,25 @@ export function Properties() {
                     />
                   ))}
                 </div>
+                {registry[object.type].sizePresets && (
+                  <div className="preset-row" aria-label="Banner size presets">
+                    {registry[object.type].sizePresets!.map((preset) => (
+                      <button
+                        key={preset.label}
+                        className={
+                          Object.entries(preset.dimensions).every(
+                            ([key, value]) => object.dimensions[key as keyof Dimensions] === value,
+                          )
+                            ? 'active'
+                            : ''
+                        }
+                        onClick={() => resize(object.id, { ...preset.dimensions })}
+                      >
+                        {preset.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
                 {object.type === 'human' && (
                   <div className="preset-row">
                     {[160, 170, 180].map((h) => (
@@ -309,6 +336,33 @@ export function Properties() {
                   </div>
                 )}
               </section>
+              {object.type === 'oilDisplayStand' && (
+                <section className="property-section">
+                  <div className="section-title">Oil names</div>
+                  <p className="oil-names-hint">Left to right. Leave blank to hide a label.</p>
+                  {(object.oilLabels ?? defaultOilLabels).map((name, index) => (
+                    <label className="oil-name-field" key={`${object.id}-${index}-${name}`}>
+                      <span>{index + 1}</span>
+                      <input
+                        aria-label={`Oil name ${index + 1}`}
+                        type="text"
+                        maxLength={40}
+                        defaultValue={name}
+                        onBlur={(event) => {
+                          const value = event.target.value.trim();
+                          if (value === name) return;
+                          const oilLabels = [...(object.oilLabels ?? defaultOilLabels)];
+                          oilLabels[index] = value;
+                          update(object.id, { oilLabels }, 'Change oil name');
+                        }}
+                        onKeyDown={(event) => {
+                          if (event.key === 'Enter') event.currentTarget.blur();
+                        }}
+                      />
+                    </label>
+                  ))}
+                </section>
+              )}
               {registry[object.type].branding && (
                 <section className="property-section">
                   <div className="section-title">
@@ -419,6 +473,7 @@ export function Properties() {
                       material: def.material,
                       variant: def.variants?.[0].id,
                       branding: undefined,
+                      oilLabels: undefined,
                       position: { x: 0, y: def.mounted ? 1.5 : def.dimensions.height / 2, z: 0 },
                     },
                     'Reset object',

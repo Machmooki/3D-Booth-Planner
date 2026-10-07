@@ -18,6 +18,9 @@ export const objectTypes = [
   'sign',
   'human',
   'box',
+  'bangchakSign',
+  'oilDisplayStand',
+  'rollupBanner',
 ] as const;
 export type ObjectType = (typeof objectTypes)[number];
 export type Category =
@@ -34,6 +37,8 @@ export const variantTypes = [
   'modern',
   'pedestal',
   'shelf',
+  'withProducts',
+  'withoutProducts',
 ] as const;
 export type Variant = (typeof variantTypes)[number];
 export interface BoothObject {
@@ -48,8 +53,10 @@ export interface BoothObject {
   variant?: Variant;
   locked: boolean;
   visible: boolean;
+  oilLabels?: string[];
   branding?: { data: string; fit: 'fit' | 'fill' | 'stretch' };
 }
+export const defaultOilLabels = ['UCO', 'TREATED UCO', 'SAF', 'B24', 'HVO'] as const;
 export interface Project {
   schemaVersion: 1;
   id: string;
@@ -70,6 +77,7 @@ export interface Definition {
   mounted?: boolean;
   description: string;
   variants?: readonly { id: Variant; label: string }[];
+  sizePresets?: readonly { label: string; dimensions: Dimensions }[];
   render: { mode: 'procedural' } | { mode: 'model'; url: string };
 }
 const dim = (width: number, height: number, depth: number) => ({ width, height, depth });
@@ -138,14 +146,7 @@ export const registry: Record<ObjectType, Definition> = {
     true,
     true,
   ),
-  banner: define(
-    'Roll-up banner',
-    'Display',
-    dim(0.8, 2, 0.15),
-    '#bdc4b4',
-    'Make a statement',
-    true,
-  ),
+  banner: define('Banner panel', 'Display', dim(0.8, 2, 0.15), '#bdc4b4', 'Make a statement', true),
   stand: {
     ...define(
       'Display stand',
@@ -182,6 +183,51 @@ export const registry: Record<ObjectType, Definition> = {
     '#a8aaa3',
     'See your booth at human scale',
   ),
+  bangchakSign: {
+    ...define(
+      'Bangchak Sign',
+      'Display',
+      dim(2.6, 1.3, 0.55),
+      '#f4f2eb',
+      'Sculpted Bangchak monument with layered plinth',
+      true,
+    ),
+    material: 'paint',
+    min: dim(1.2, 0.7, 0.25),
+    max: dim(5, 2.5, 1.2),
+  },
+  oilDisplayStand: {
+    ...define(
+      'Oil Display Stand',
+      'Display',
+      dim(2.8, 1.25, 0.65),
+      '#f4f2eb',
+      'Five fuel samples on a curved exhibition podium',
+    ),
+    material: 'paint',
+    min: dim(1.5, 0.8, 0.4),
+    max: dim(5, 2, 1.2),
+    variants: [
+      { id: 'withProducts', label: 'With products' },
+      { id: 'withoutProducts', label: 'Podium only' },
+    ],
+  },
+  rollupBanner: {
+    ...define(
+      'Roll-up Banner',
+      'Display',
+      dim(0.85, 2, 0.32),
+      '#f3f0e7',
+      'Portable banner with cassette, rear pole and stabilizing feet',
+      true,
+    ),
+    min: dim(0.6, 1.6, 0.2),
+    max: dim(1.2, 2.5, 0.5),
+    sizePresets: [0.85, 1, 1.2].map((width) => ({
+      label: `${width * 100} × 200`,
+      dimensions: dim(width, 2, 0.32),
+    })),
+  },
   box: define('Custom box', 'Utility', dim(0.6, 0.6, 0.6), '#c4c2b9', 'Make it your own', true),
 };
 export const cm = (meters: number) => Math.round(meters * 1000) / 10;
@@ -337,6 +383,7 @@ const objectSchema = z.object({
   color: z.string().regex(/^#[\da-fA-F]{6}$/),
   material: z.enum(materialTypes),
   variant: z.enum(variantTypes).optional(),
+  oilLabels: z.array(z.string().max(40)).length(5).optional(),
   locked: z.boolean(),
   visible: z.boolean(),
   branding: z

@@ -2,6 +2,43 @@ import type { ObjectType } from '../domain/model';
 export function ObjectThumbnail({ type }: { type: ObjectType }) {
   const common = { stroke: '#74786c', strokeWidth: 1.05, strokeLinejoin: 'round' as const };
   const shapes: Record<ObjectType, React.ReactNode> = {
+    bangchakSign: (
+      <>
+        <path d="M14 77 78 63l16 7-64 17Z" fill="#c8c9be" />
+        <path d="M17 74V49q0-22 23-25v10l42-7q6 0 6 7v31L27 80Z" fill="#efede2" />
+        <path d="M27 80V48q0-19 16-20v10l39-9v37Z" fill="#dfdfd2" />
+        <path d="M31 49q-1-11 10-13v14q-4 13-10 5Z" fill="#548845" stroke="none" />
+        <path
+          d="m46 45 31-7m-31 12 30-7m-23 14 23-5m-40 15 39-9"
+          stroke="#537844"
+          strokeWidth="3"
+        />
+      </>
+    ),
+    oilDisplayStand: (
+      <>
+        <path d="M14 60q0-5 6-6l57-12q9-1 13 7v24L28 88q-14 0-14-8Z" fill="#e9e7dc" />
+        <path d="m14 78 14 7 61-15v5L28 91 14 84Z" fill="#c6c9bf" />
+        {[0, 1, 2, 3, 4].map((i) => (
+          <g key={i} transform={`translate(${24 + i * 13} ${49 - i * 2.7})`}>
+            <ellipse rx="6" ry="3" fill="#acb7ad" />
+            <path d="M-4 0v-18h8V0Z" fill={i === 2 || i === 4 ? '#c0d0b2' : '#495646'} />
+            <ellipse cy="-18" rx="5" ry="2" fill="#c9d1c5" />
+            <path d="m-3 13 6-1" stroke="#67805a" strokeWidth="2" />
+          </g>
+        ))}
+      </>
+    ),
+    rollupBanner: (
+      <>
+        <path d="M40 84v8m27-14v9" stroke="#8d998e" strokeWidth="3" />
+        <path d="m29 85 44-10 7 4-44 11Z" fill="#abb3a8" />
+        <path d="m33 22 38-9v63l-38 9Z" fill="#e5e6d7" />
+        <path d="m33 66 38-9v19l-38 9Z" fill="#607961" />
+        <path d="m32 21 40-9M40 34l22-5m-22 11 17-4" stroke="#83947c" strokeWidth="2" />
+        <path d="M43 64V52q8-17 17-4v12" stroke="#a6b498" fill="none" />
+      </>
+    ),
     backdrop: (
       <>
         <path d="M23 25 76 15v52L23 80Z" fill="#bfc8b4" />
